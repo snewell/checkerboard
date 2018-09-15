@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include <checkerboard/address.hpp>
 #include <checkerboard/domain.hpp>
 #include <checkerboard/type.hpp>
 
@@ -45,6 +46,11 @@ namespace checkerboard
             }
         }
 
+        int socket() const noexcept
+        {
+            return _socket;
+        }
+
         Socket(Socket const &s) = delete;
 
         Socket& operator = (Socket const &s) = delete;
@@ -54,6 +60,18 @@ namespace checkerboard
 
         int _socket;
     };
+
+    template <Domain DOMAIN, Type TYPE>
+    void bind(Socket<DOMAIN, TYPE> &socket, Address<DOMAIN> const &address)
+    {
+        ::bind(socket.socket(), address.sockaddr(), Address<DOMAIN>::sockaddr_size);
+    }
+
+    template <Domain DOMAIN, Type TYPE>
+    void listen(Socket<DOMAIN, TYPE> &socket, unsigned int backlog)
+    {
+        ::listen(socket.socket(), backlog);
+    }
 }
 
 #endif
