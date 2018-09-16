@@ -67,10 +67,18 @@ namespace checkerboard
     class BoundSocket : private Socket<DOMAIN, TYPE>
     {
     public:
-        explicit BoundSocket(Socket<DOMAIN, TYPE> &&s)
+        explicit BoundSocket(Socket<DOMAIN, TYPE> && s)
           : Socket<DOMAIN, TYPE>{std::move(s)}
         {
             // TODO: make sure s wasn't invalid
+        }
+
+        Address<DOMAIN> address() const noexcept
+        {
+            typename Address<DOMAIN>::sockaddr_type sa;
+            auto len = Address<DOMAIN>::sockaddr_size;
+            ::getsockname(socket(), reinterpret_cast<::sockaddr *>(&sa), &len);
+            return Address<DOMAIN>{sa};
         }
 
         using Socket<DOMAIN, TYPE>::socket;
@@ -80,13 +88,14 @@ namespace checkerboard
     class ListeningSocket : private BoundSocket<DOMAIN, TYPE>
     {
     public:
-        explicit ListeningSocket(BoundSocket<DOMAIN, TYPE> &&s)
+        explicit ListeningSocket(BoundSocket<DOMAIN, TYPE> && s)
           : BoundSocket<DOMAIN, TYPE>{std::move(s)}
         {
             // TODO: make sure s wasn't invalid
         }
 
         using BoundSocket<DOMAIN, TYPE>::socket;
+        using BoundSocket<DOMAIN, TYPE>::address;
     };
 } // namespace checkerboard
 

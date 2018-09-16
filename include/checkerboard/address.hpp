@@ -19,13 +19,13 @@ namespace checkerboard
     class Address
     {
     public:
-        using sockaddr_t = sockaddr_type_t<DOMAIN>;
+        using sockaddr_type = sockaddr_type_t<DOMAIN>;
 
-        static constexpr std::size_t sockaddr_size = sizeof(sockaddr_t);
+        static constexpr ::socklen_t sockaddr_size = sizeof(sockaddr_type);
 
         static constexpr std::size_t ip_byte_count = ip_size<DOMAIN>::value;
 
-        Address(sockaddr_t sockaddr)
+        Address(sockaddr_type sockaddr)
         {
             ::memcpy(&_sockaddr, &sockaddr, sockaddr_size);
         }
@@ -47,11 +47,12 @@ namespace checkerboard
 
         std::uint16_t port() const noexcept
         {
-            return inner::sockaddr_port_getter<DOMAIN>::get_sockaddr_port(_sockaddr);
+            return inner::sockaddr_port_getter<DOMAIN>::get_sockaddr_port(
+                _sockaddr);
         }
 
     private:
-        sockaddr_t _sockaddr;
+        sockaddr_type _sockaddr;
     };
 } // namespace checkerboard
 

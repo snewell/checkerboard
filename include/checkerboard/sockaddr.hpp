@@ -33,7 +33,7 @@ namespace checkerboard
 
         template <Domain DOMAIN>
         struct sockaddr_ip_getter;
-    }
+    } // namespace inner
 
     template <>
     struct sockaddr_type<checkerboard::inet>
@@ -58,7 +58,7 @@ namespace checkerboard
 
             static sockaddr_t
             make_sockaddr(std::uint8_t const (&ip)[ip_byte_count],
-                            std::uint16_t port)
+                          std::uint16_t port)
             {
                 sockaddr_t sockaddr;
                 ::memset(&sockaddr, 0, sizeof(sockaddr_t));
@@ -77,7 +77,7 @@ namespace checkerboard
         {
             using sockaddr_t = sockaddr_type_t<checkerboard::inet>;
 
-            static std::uint16_t get_sockaddr_port(sockaddr_t const &s)
+            static std::uint16_t get_sockaddr_port(sockaddr_t const & s)
             {
                 return ::ntohs(s.sin_port);
             }
@@ -88,12 +88,14 @@ namespace checkerboard
         {
             using sockaddr_t = sockaddr_type_t<checkerboard::inet>;
 
-            static void fill_ip(sockaddr_t const &s, std::uint8_t (&ip)[ip_size_v<checkerboard::inet>])
+            static void
+            fill_ip(sockaddr_t const & s,
+                    std::uint8_t (&ip)[ip_size_v<checkerboard::inet>])
             {
                 ::memcpy(ip, &(s.sin_addr), ip_size_v<checkerboard::inet>);
             }
         };
-    }
+    } // namespace inner
 
     template <>
     struct sockaddr_type<checkerboard::inet6>
@@ -119,7 +121,7 @@ namespace checkerboard
 
             static sockaddr_t
             make_sockaddr(std::uint8_t const (&ip)[ip_byte_count],
-                            std::uint16_t port)
+                          std::uint16_t port)
             {
                 sockaddr_t sockaddr;
                 ::memset(&sockaddr, 0, sizeof(sockaddr_t));
@@ -138,7 +140,7 @@ namespace checkerboard
         {
             using sockaddr_t = sockaddr_type_t<checkerboard::inet6>;
 
-            static std::uint16_t get_sockaddr_port(sockaddr_t const &s)
+            static std::uint16_t get_sockaddr_port(sockaddr_t const & s)
             {
                 return ::ntohs(s.sin6_port);
             }
@@ -149,12 +151,14 @@ namespace checkerboard
         {
             using sockaddr_t = sockaddr_type_t<checkerboard::inet6>;
 
-            static void fill_ip(sockaddr_t const &s, std::uint8_t (&ip)[ip_size_v<checkerboard::inet6>])
+            static void
+            fill_ip(sockaddr_t const & s,
+                    std::uint8_t (&ip)[ip_size_v<checkerboard::inet6>])
             {
                 ::memcpy(ip, &(s.sin6_addr), ip_size_v<checkerboard::inet6>);
             }
         };
-    }
-}
+    } // namespace inner
+} // namespace checkerboard
 
 #endif
