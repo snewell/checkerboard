@@ -76,6 +76,7 @@ add_subdirectory(test)
 add_headers(
     address.hpp
     domain.hpp
+    sockaddr.hpp
     socket.hpp
     type.hpp
 )

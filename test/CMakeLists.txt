@@ -1,3 +1,7 @@
+create_test(address_test
+    address_test.cpp
+)
+
 create_test(compile_test
     address_compile_test.cpp
     domain_compile_test.cpp
