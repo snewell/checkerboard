@@ -41,3 +41,23 @@ TEST(Tcp, connect_inet)
     ASSERT_TRUE(
         std::equal(std::begin(hello), std::end(hello), std::begin(world)));
 }
+
+TEST(Tcp, connect_inet6)
+{
+    std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    checkerboard::Address<checkerboard::inet6> a{ip, 0};
+    auto listening_socket = make_server(a);
+    auto outbound_connection = connect_server(listening_socket.address());
+    auto inbound_connection = checkerboard::accept(listening_socket);
+
+    std::int8_t const hello[] = "Hello";
+    auto sent_bytes = checkerboard::send(outbound_connection, hello);
+
+    std::int8_t world[6];
+    auto received_bytes =
+        checkerboard::recv(std::get<0>(inbound_connection), world);
+
+    ASSERT_EQ(sent_bytes, received_bytes);
+    ASSERT_TRUE(
+        std::equal(std::begin(hello), std::end(hello), std::begin(world)));
+}
