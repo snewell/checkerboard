@@ -1,8 +1,8 @@
 #ifndef CHECKERBOARD_SOCKET_HPP
 #define CHECKERBOARD_SOCKET_HPP 1
 
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <type_traits>
@@ -18,7 +18,9 @@ namespace checkerboard
     {
     public:
         Socket()
-          : _socket{::socket(static_cast<std::underlying_type_t<Domain>>(DOMAIN), static_cast<std::underlying_type_t<Type>>(TYPE), 0)}
+          : _socket{
+                ::socket(static_cast<std::underlying_type_t<Domain>>(DOMAIN),
+                         static_cast<std::underlying_type_t<Type>>(TYPE), 0)}
         {
             if(_socket == invalid_socket)
             {
@@ -26,13 +28,13 @@ namespace checkerboard
             }
         }
 
-        Socket(Socket &&s) noexcept
+        Socket(Socket && s) noexcept
           : _socket{s._socket}
         {
             s._socket = invalid_socket;
         }
 
-        Socket& operator = (Socket && s) noexcept
+        Socket & operator=(Socket && s) noexcept
         {
             std::swap(_socket, s._socket);
             return *this;
@@ -51,9 +53,9 @@ namespace checkerboard
             return _socket;
         }
 
-        Socket(Socket const &s) = delete;
+        Socket(Socket const & s) = delete;
 
-        Socket& operator = (Socket const &s) = delete;
+        Socket & operator=(Socket const & s) = delete;
 
     private:
         constexpr static int invalid_socket = -1;
@@ -62,16 +64,17 @@ namespace checkerboard
     };
 
     template <Domain DOMAIN, Type TYPE>
-    void bind(Socket<DOMAIN, TYPE> &socket, Address<DOMAIN> const &address)
+    void bind(Socket<DOMAIN, TYPE> & socket, Address<DOMAIN> const & address)
     {
-        ::bind(socket.socket(), address.sockaddr(), Address<DOMAIN>::sockaddr_size);
+        ::bind(socket.socket(), address.sockaddr(),
+               Address<DOMAIN>::sockaddr_size);
     }
 
     template <Domain DOMAIN, Type TYPE>
-    void listen(Socket<DOMAIN, TYPE> &socket, unsigned int backlog)
+    void listen(Socket<DOMAIN, TYPE> & socket, unsigned int backlog)
     {
         ::listen(socket.socket(), backlog);
     }
-}
+} // namespace checkerboard
 
 #endif
