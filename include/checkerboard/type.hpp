@@ -11,7 +11,7 @@ namespace checkerboard
     };
 
     constexpr Type stream = Type(SOCK_STREAM);
-    constexpr Type datagraph = Type(SOCK_DGRAM);
+    constexpr Type datagram = Type(SOCK_DGRAM);
 } // namespace checkerboard
 
 #endif
