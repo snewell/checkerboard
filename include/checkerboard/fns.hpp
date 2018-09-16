@@ -1,7 +1,7 @@
 #ifndef CHECKERBOARD_FNS_HPP
 #define CHECKERBOARD_FNS_HPP 1
 
-#include <errno.h>
+#include <cerrno>
 
 #include <stdexcept>
 #include <tuple>
