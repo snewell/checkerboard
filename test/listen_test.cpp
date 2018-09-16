@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(Listen, simple_listen)
+TEST(Listen, simple_listen) // NOLINT
 {
     checkerboard::Socket<checkerboard::inet, checkerboard::stream> s;
 
@@ -14,7 +14,7 @@ TEST(Listen, simple_listen)
     sleep(10);
 }
 
-TEST(Listen, simple_listen6)
+TEST(Listen, simple_listen6) // NOLINT
 {
     checkerboard::Socket<checkerboard::inet6, checkerboard::stream> s;
 

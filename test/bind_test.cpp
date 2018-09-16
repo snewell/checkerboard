@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(Bind, simple_bind)
+TEST(Bind, simple_bind) // NOLINT
 {
     checkerboard::Socket<checkerboard::inet, checkerboard::stream> s;
 
@@ -12,7 +12,7 @@ TEST(Bind, simple_bind)
     checkerboard::bind(s, a);
 }
 
-TEST(Bind, simple_bind6)
+TEST(Bind, simple_bind6) // NOLINT
 {
     checkerboard::Socket<checkerboard::inet6, checkerboard::stream> s;
 
