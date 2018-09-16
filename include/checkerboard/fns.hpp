@@ -86,6 +86,22 @@ namespace checkerboard
             }
             return ret;
         }
+
+        template <Domain DOMAIN, Type TYPE, typename DATA>
+        std::size_t real_send_to(BoundSocket<DOMAIN, TYPE> & socket,
+                                 Address<DOMAIN> const & destination,
+                                 DATA const * data, std::size_t size)
+        {
+            // TODO: check errors and retry if it's a transitive error
+            auto ret =
+                ::sendto(socket.socket(), data, size, 0, destination.sockaddr(),
+                         Address<DOMAIN>::sockaddr_size);
+            if(ret < 0)
+            {
+                inner::emit_exception(errno);
+            }
+            return ret;
+        }
     } // namespace inner
 
     template <Domain DOMAIN, Type TYPE>
@@ -116,6 +132,38 @@ namespace checkerboard
         return inner::real_send(socket, data, SIZE);
     }
 
+    template <Domain DOMAIN, Type TYPE>
+    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
+                        Address<DOMAIN> const & destination,
+                        std::uint8_t const * data, std::size_t size)
+    {
+        return inner::real_send(socket, data, size);
+    }
+
+    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
+                        Address<DOMAIN> const & destination,
+                        std::uint8_t const (&data)[SIZE])
+    {
+        return inner::real_send(socket, data, SIZE);
+    }
+
+    template <Domain DOMAIN, Type TYPE>
+    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
+                        Address<DOMAIN> const & destination,
+                        std::int8_t const * data, std::size_t size)
+    {
+        return inner::real_send(socket, data, size);
+    }
+
+    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
+                        Address<DOMAIN> const & destination,
+                        std::int8_t const (&data)[SIZE])
+    {
+        return inner::real_send(socket, data, SIZE);
+    }
+
     namespace inner
     {
         template <Domain DOMAIN, Type TYPE, typename DATA>
@@ -129,6 +177,24 @@ namespace checkerboard
                 inner::emit_exception(errno);
             }
             return ret;
+        }
+
+        template <Domain DOMAIN, Type TYPE, typename DATA>
+        std::tuple<std::size_t, Address<DOMAIN>>
+        real_recv_from(BoundSocket<DOMAIN, TYPE> & socket, DATA * data,
+                       std::size_t size)
+        {
+            typename Address<DOMAIN>::sockaddr_type sa;
+            auto len = Address<DOMAIN>::sockaddr_size;
+
+            // TODO: check errors and retry if it's a transitive error
+            auto ret = ::recvfrom(socket.socket(), data, size, 0,
+                                  reinterpret_cast<::sockaddr *>(&sa), &len);
+            if(ret < 0)
+            {
+                inner::emit_exception(errno);
+            }
+            return std::make_tuple(ret, Address<DOMAIN>{sa});
         }
     } // namespace inner
 
@@ -158,6 +224,36 @@ namespace checkerboard
                      std::int8_t (&data)[SIZE])
     {
         return inner::real_recv(socket, data, SIZE);
+    }
+
+    template <Domain DOMAIN, Type TYPE>
+    std::tuple<std::size_t, Address<DOMAIN>>
+    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::uint8_t * data,
+              std::size_t size)
+    {
+        return inner::real_recv_from(socket, data, size);
+    }
+
+    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    std::tuple<std::size_t, Address<DOMAIN>>
+    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::uint8_t (&data)[SIZE])
+    {
+        return inner::real_recv_from(socket, data, SIZE);
+    }
+
+    template <Domain DOMAIN, Type TYPE>
+    std::tuple<std::size_t, Address<DOMAIN>>
+    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::int8_t * data,
+              std::size_t size)
+    {
+        return inner::real_recv_from(socket, data, size);
+    }
+
+    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    std::tuple<std::size_t, Address<DOMAIN>>
+    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::int8_t (&data)[SIZE])
+    {
+        return inner::real_recv_from(socket, data, SIZE);
     }
 } // namespace checkerboard
 

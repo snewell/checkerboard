@@ -19,3 +19,7 @@ create_test(socket_test
 create_test(tcp_test
     tcp_connect_test.cpp
 )
+
+create_test(udp_test
+    udp_connect_test.cpp
+)
