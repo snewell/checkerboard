@@ -28,6 +28,12 @@ namespace checkerboard
             }
         }
 
+        Socket(int socket)
+          : _socket{socket}
+        {
+            // TODO: verify socket is valid
+        }
+
         Socket(Socket && s) noexcept
           : _socket{s._socket}
         {
@@ -82,6 +88,20 @@ namespace checkerboard
         }
 
         using Socket<DOMAIN, TYPE>::socket;
+    };
+
+    template <Domain DOMAIN, Type TYPE>
+    class ConnectedSocket : private BoundSocket<DOMAIN, TYPE>
+    {
+    public:
+        explicit ConnectedSocket(Socket<DOMAIN, TYPE> && s)
+          : BoundSocket<DOMAIN, TYPE>{std::move(s)}
+        {
+            // TODO: make sure s wasn't invalid
+        }
+
+        using BoundSocket<DOMAIN, TYPE>::socket;
+        using BoundSocket<DOMAIN, TYPE>::address;
     };
 
     template <Domain DOMAIN, Type TYPE>

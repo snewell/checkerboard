@@ -15,3 +15,7 @@ create_test(socket_test
     bind_test.cpp
     listen_test.cpp
 )
+
+create_test(tcp_test
+    tcp_connect_test.cpp
+)
