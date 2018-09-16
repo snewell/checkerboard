@@ -64,17 +64,26 @@ namespace checkerboard
     };
 
     template <Domain DOMAIN, Type TYPE>
-    void bind(Socket<DOMAIN, TYPE> & socket, Address<DOMAIN> const & address)
+    class BoundSocket : public Socket<DOMAIN, TYPE>
     {
-        ::bind(socket.socket(), address.sockaddr(),
-               Address<DOMAIN>::sockaddr_size);
-    }
+    public:
+        explicit BoundSocket(Socket<DOMAIN, TYPE> &&s)
+          : Socket<DOMAIN, TYPE>{std::move(s)}
+        {
+            // TODO: make sure s wasn't invalid
+        }
+    };
 
     template <Domain DOMAIN, Type TYPE>
-    void listen(Socket<DOMAIN, TYPE> & socket, unsigned int backlog)
+    class ListeningSocket : public BoundSocket<DOMAIN, TYPE>
     {
-        ::listen(socket.socket(), backlog);
-    }
+    public:
+        explicit ListeningSocket(Socket<DOMAIN, TYPE> &&s)
+          : BoundSocket<DOMAIN, TYPE>{std::move(s)}
+        {
+            // TODO: make sure s wasn't invalid
+        }
+    };
 } // namespace checkerboard
 
 #endif

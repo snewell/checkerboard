@@ -3,6 +3,10 @@
 
 #include <netinet/in.h>
 
+#include <cstdint>
+#include <cstring>
+#include <type_traits>
+
 #include <checkerboard/domain.hpp>
 
 namespace checkerboard

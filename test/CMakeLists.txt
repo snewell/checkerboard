@@ -5,6 +5,8 @@ create_test(address_test
 create_test(compile_test
     address_compile_test.cpp
     domain_compile_test.cpp
+    fns_compile_test.cpp
+    sockaddr_compile_test.cpp
     socket_compile_test.cpp
     type_compile_test.cpp
 )
