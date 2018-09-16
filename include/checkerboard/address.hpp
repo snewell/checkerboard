@@ -12,60 +12,113 @@
 
 namespace checkerboard
 {
-    template<Domain DOMAIN>
-    class Address;
-
     namespace inner
     {
-        template <typename SOCKADDR, std::size_t IP_BYTES>
-        SOCKADDR make_sockaddr(Domain domain, std::uint8_t const (&ip)[IP_BYTES], std::uint16_t port)
+        template <Domain DOMAIN>
+        struct sockaddr_type;
+
+        template <Domain DOMAIN>
+        using sockaddr_type_t = typename sockaddr_type<DOMAIN>::type;
+
+        template <Domain DOMAIN>
+        struct ip_size;
+
+        template <Domain DOMAIN>
+        constexpr auto ip_size_v = ip_size<DOMAIN>::value;
+
+        template <Domain DOMAIN>
+        struct sockaddr_builder;
+
+        template <>
+        struct sockaddr_type<checkerboard::inet>
         {
-            SOCKADDR sockaddr;
-            ::memset(&sockaddr, 0, sizeof(SOCKADDR));
-            ::memcpy(&(sockaddr.sin_addr), ip, IP_BYTES);
-            sockaddr.sin_family = static_cast<std::underlying_type_t<Domain>>(domain);
-            sockaddr.sin_port = ::htons(port);
+            using type = ::sockaddr_in;
+        };
 
-            return sockaddr;
-        }
-
-        template <Domain DOMAIN, typename SOCKADDR, std::size_t IP_BYTES>
-        class SockaddrAddress
+        template <>
+        struct ip_size<checkerboard::inet>
         {
-        public:
-            using sockaddr_t = SOCKADDR;
+            static constexpr std::size_t value = 4;
+        };
 
-            static constexpr std::size_t sockaddr_size = sizeof(SOCKADDR);
+        template <>
+        struct sockaddr_builder<checkerboard::inet>
+        {
+            using sockaddr_t = sockaddr_type_t<checkerboard::inet>;
 
-            SockaddrAddress(SOCKADDR sockaddr)
+            static constexpr auto ip_byte_count = ip_size_v<checkerboard::inet>;
+
+            static sockaddr_t make_sockaddr(std::uint8_t const (&ip)[ip_byte_count], std::uint16_t port)
             {
-                ::memcpy(&_sockaddr, &sockaddr, sockaddr_size);
-            }
+                sockaddr_t sockaddr;
+                ::memset(&sockaddr, 0, sizeof(sockaddr_t));
+                ::memcpy(&(sockaddr.sin_addr), ip, ip_byte_count);
+                sockaddr.sin_family = static_cast<std::underlying_type_t<Domain>>(checkerboard::inet);
+                sockaddr.sin_port = ::htons(port);
 
-            SockaddrAddress(std::uint8_t const (&ip)[IP_BYTES], std::uint16_t port)
-              : SockaddrAddress{make_sockaddr<SOCKADDR, IP_BYTES>(DOMAIN, ip, port)}
+                return sockaddr;
+            }
+        };
+
+        template <>
+        struct sockaddr_type<checkerboard::inet6>
+        {
+            using type = ::sockaddr_in6;
+        };
+
+        template <>
+        struct ip_size<checkerboard::inet6>
+        {
+            static constexpr std::size_t value = 16;
+        };
+
+        template <>
+        struct sockaddr_builder<checkerboard::inet6>
+        {
+            using sockaddr_t = sockaddr_type_t<checkerboard::inet6>;
+
+            static constexpr auto ip_byte_count = ip_size_v<checkerboard::inet6>;
+
+            static sockaddr_t make_sockaddr(std::uint8_t const (&ip)[ip_byte_count], std::uint16_t port)
             {
-            }
+                sockaddr_t sockaddr;
+                ::memset(&sockaddr, 0, sizeof(sockaddr_t));
+                ::memcpy(&(sockaddr.sin6_addr), ip, ip_byte_count);
+                sockaddr.sin6_family = static_cast<std::underlying_type_t<Domain>>(checkerboard::inet6);
+                sockaddr.sin6_port = ::htons(port);
 
-            ::sockaddr const* sockaddr() const noexcept
-            {
-                return reinterpret_cast<::sockaddr const*>(&_sockaddr);
+                return sockaddr;
             }
-
-        private:
-            SOCKADDR _sockaddr;
         };
     }
 
-    template <>
-    class Address<Domain::inet> : public inner::SockaddrAddress<Domain::inet, ::sockaddr_in, 4>
+    template <Domain DOMAIN>
+    class Address
     {
     public:
-        template <typename ...Ts>
-        Address(Ts && ...ts)
-          : inner::SockaddrAddress<Domain::inet, ::sockaddr_in, 4>{std::forward<Ts>(ts)...}
+        using sockaddr_t = inner::sockaddr_type_t<DOMAIN>;
+
+        static constexpr std::size_t sockaddr_size = sizeof(sockaddr_t);
+
+        static constexpr std::size_t ip_byte_count = inner::ip_size<DOMAIN>::value;
+
+        Address(sockaddr_t sockaddr)
+        {
+            ::memcpy(&_sockaddr, &sockaddr, sockaddr_size);
+        }
+
+        Address(std::uint8_t const (&ip)[ip_byte_count], std::uint16_t port)
+            : Address{inner::sockaddr_builder<DOMAIN>::make_sockaddr(ip, port)}
         {
         }
+
+        ::sockaddr const* sockaddr() const noexcept
+        {
+            return reinterpret_cast<::sockaddr const*>(&_sockaddr);
+        }
+
+    private:
+        sockaddr_t _sockaddr;
     };
 }
 

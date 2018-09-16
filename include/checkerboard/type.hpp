@@ -6,11 +6,10 @@
 
 namespace checkerboard
 {
-    enum class Type
-    {
-        stream = SOCK_STREAM,
-        datagram = SOCK_DGRAM
-    };
+    enum class Type { };
+
+    constexpr Type stream = Type(SOCK_STREAM);
+    constexpr Type datagraph = Type(SOCK_DGRAM);
 }
 
 #endif
