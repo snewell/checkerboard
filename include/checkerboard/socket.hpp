@@ -64,7 +64,7 @@ namespace checkerboard
     };
 
     template <Domain DOMAIN, Type TYPE>
-    class BoundSocket : public Socket<DOMAIN, TYPE>
+    class BoundSocket : private Socket<DOMAIN, TYPE>
     {
     public:
         explicit BoundSocket(Socket<DOMAIN, TYPE> &&s)
@@ -72,17 +72,21 @@ namespace checkerboard
         {
             // TODO: make sure s wasn't invalid
         }
+
+        using Socket<DOMAIN, TYPE>::socket;
     };
 
     template <Domain DOMAIN, Type TYPE>
-    class ListeningSocket : public BoundSocket<DOMAIN, TYPE>
+    class ListeningSocket : private BoundSocket<DOMAIN, TYPE>
     {
     public:
-        explicit ListeningSocket(Socket<DOMAIN, TYPE> &&s)
+        explicit ListeningSocket(BoundSocket<DOMAIN, TYPE> &&s)
           : BoundSocket<DOMAIN, TYPE>{std::move(s)}
         {
             // TODO: make sure s wasn't invalid
         }
+
+        using BoundSocket<DOMAIN, TYPE>::socket;
     };
 } // namespace checkerboard
 
