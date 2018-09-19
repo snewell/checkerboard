@@ -137,7 +137,7 @@ namespace checkerboard
                         Address<DOMAIN> const & destination,
                         std::uint8_t const * data, std::size_t size)
     {
-        return inner::real_send(socket, data, size);
+        return inner::real_send_to(socket, destination, data, size);
     }
 
     template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
@@ -145,7 +145,7 @@ namespace checkerboard
                         Address<DOMAIN> const & destination,
                         std::uint8_t const (&data)[SIZE])
     {
-        return inner::real_send(socket, data, SIZE);
+        return inner::real_send_to(socket, destination, data, SIZE);
     }
 
     template <Domain DOMAIN, Type TYPE>
@@ -153,7 +153,7 @@ namespace checkerboard
                         Address<DOMAIN> const & destination,
                         std::int8_t const * data, std::size_t size)
     {
-        return inner::real_send(socket, data, size);
+        return inner::real_send_to(socket, destination, data, size);
     }
 
     template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
@@ -161,7 +161,7 @@ namespace checkerboard
                         Address<DOMAIN> const & destination,
                         std::int8_t const (&data)[SIZE])
     {
-        return inner::real_send(socket, data, SIZE);
+        return inner::real_send_to(socket, destination, data, SIZE);
     }
 
     namespace inner
