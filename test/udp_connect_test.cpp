@@ -21,7 +21,7 @@ namespace
     }
 } // namespace
 
-TEST(Tcp, connect_inet)
+TEST(Tcp, connect_inet) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -39,7 +39,7 @@ TEST(Tcp, connect_inet)
         std::equal(std::begin(hello), std::end(hello), std::begin(world)));
 }
 
-TEST(Tcp, connect_inet6)
+TEST(Tcp, connect_inet6) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};
