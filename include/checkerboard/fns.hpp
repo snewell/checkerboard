@@ -35,6 +35,9 @@ namespace checkerboard
     ListeningSocket<DOMAIN, TYPE> listen(BoundSocket<DOMAIN, TYPE> && socket,
                                          unsigned int backlog)
     {
+        static_assert(accepts_connections_v<TYPE>,
+                      "listen is only available for connection-based types");
+
         if(::listen(socket.socket(), backlog) != 0)
         {
             inner::emit_exception(errno);
@@ -92,6 +95,9 @@ namespace checkerboard
                                  Address<DOMAIN> const & destination,
                                  DATA const * data, std::size_t size)
         {
+            static_assert(is_connectionless_v<TYPE>,
+                          "send_to requires a connectionless type");
+
             // TODO: check errors and retry if it's a transitive error
             auto ret =
                 ::sendto(socket.socket(), data, size, 0, destination.sockaddr(),

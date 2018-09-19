@@ -107,6 +107,8 @@ namespace checkerboard
     template <Domain DOMAIN, Type TYPE>
     class ListeningSocket : private BoundSocket<DOMAIN, TYPE>
     {
+        static_assert(accepts_connections_v<TYPE>, "Invalid socket type");
+
     public:
         explicit ListeningSocket(BoundSocket<DOMAIN, TYPE> && s)
           : BoundSocket<DOMAIN, TYPE>{std::move(s)}
