@@ -18,8 +18,10 @@ create_test(socket_test
 
 create_test(tcp_test
     tcp_connect_test.cpp
+    tcp_echo_test.cpp
 )
 
 create_test(udp_test
     udp_connect_test.cpp
+    udp_echo_test.cpp
 )
