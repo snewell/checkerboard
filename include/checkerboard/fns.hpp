@@ -90,12 +90,14 @@ namespace checkerboard
             return ret;
         }
 
-        template <Domain DOMAIN, Type TYPE, typename DATA>
-        std::size_t real_send_to(BoundSocket<DOMAIN, TYPE> & socket,
+        template <typename SOCKET, Domain DOMAIN, typename DATA>
+        std::size_t real_send_to(SOCKET & socket,
                                  Address<DOMAIN> const & destination,
                                  DATA const * data, std::size_t size)
         {
-            static_assert(is_connectionless_v<TYPE>,
+            static_assert(connectionless_send_v<SOCKET>,
+                          "send_to requires a connectionless Socket");
+            static_assert(is_connectionless_v<SOCKET::type>,
                           "send_to requires a connectionless type");
 
             // TODO: check errors and retry if it's a transitive error
@@ -138,33 +140,29 @@ namespace checkerboard
         return inner::real_send(socket, data, SIZE);
     }
 
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
-                        Address<DOMAIN> const & destination,
+    template <typename SOCKET, Domain DOMAIN>
+    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
                         std::uint8_t const * data, std::size_t size)
     {
         return inner::real_send_to(socket, destination, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
-    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
-                        Address<DOMAIN> const & destination,
+    template <typename SOCKET, Domain DOMAIN, std::size_t SIZE>
+    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
                         std::uint8_t const (&data)[SIZE])
     {
         return inner::real_send_to(socket, destination, data, SIZE);
     }
 
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
-                        Address<DOMAIN> const & destination,
+    template <typename SOCKET, Domain DOMAIN>
+    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
                         std::int8_t const * data, std::size_t size)
     {
         return inner::real_send_to(socket, destination, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
-    std::size_t send_to(BoundSocket<DOMAIN, TYPE> & socket,
-                        Address<DOMAIN> const & destination,
+    template <typename SOCKET, Domain DOMAIN, std::size_t SIZE>
+    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
                         std::int8_t const (&data)[SIZE])
     {
         return inner::real_send_to(socket, destination, data, SIZE);
@@ -185,11 +183,16 @@ namespace checkerboard
             return ret;
         }
 
-        template <Domain DOMAIN, Type TYPE, typename DATA>
+        template <typename SOCKET, typename DATA,
+                  Domain DOMAIN = SOCKET::domain>
         std::tuple<std::size_t, Address<DOMAIN>>
-        real_recv_from(BoundSocket<DOMAIN, TYPE> & socket, DATA * data,
-                       std::size_t size)
+        real_recv_from(SOCKET & socket, DATA * data, std::size_t size)
         {
+            static_assert(connectionless_send_v<SOCKET>,
+                          "send_to requires a connectionless Socket");
+            static_assert(is_connectionless_v<SOCKET::type>,
+                          "send_to requires a connectionless type");
+
             typename Address<DOMAIN>::sockaddr_type sa;
             auto len = Address<DOMAIN>::sockaddr_size;
 
@@ -232,32 +235,30 @@ namespace checkerboard
         return inner::real_recv(socket, data, SIZE);
     }
 
-    template <Domain DOMAIN, Type TYPE>
+    template <typename SOCKET, Domain DOMAIN = SOCKET::domain>
     std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::uint8_t * data,
-              std::size_t size)
+    recv_from(SOCKET & socket, std::uint8_t * data, std::size_t size)
     {
         return inner::real_recv_from(socket, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    template <typename SOCKET, std::size_t SIZE, Domain DOMAIN = SOCKET::domain>
     std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::uint8_t (&data)[SIZE])
+    recv_from(SOCKET & socket, std::uint8_t (&data)[SIZE])
     {
         return inner::real_recv_from(socket, data, SIZE);
     }
 
-    template <Domain DOMAIN, Type TYPE>
+    template <typename SOCKET, Domain DOMAIN = SOCKET::domain>
     std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::int8_t * data,
-              std::size_t size)
+    recv_from(SOCKET & socket, std::int8_t * data, std::size_t size)
     {
         return inner::real_recv_from(socket, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    template <typename SOCKET, std::size_t SIZE, Domain DOMAIN = SOCKET::domain>
     std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(BoundSocket<DOMAIN, TYPE> & socket, std::int8_t (&data)[SIZE])
+    recv_from(SOCKET & socket, std::int8_t (&data)[SIZE])
     {
         return inner::real_recv_from(socket, data, SIZE);
     }

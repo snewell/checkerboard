@@ -17,6 +17,10 @@ namespace checkerboard
     class Socket
     {
     public:
+        static constexpr Domain domain = DOMAIN;
+
+        static constexpr Type type = TYPE;
+
         Socket()
           : _socket{
                 ::socket(static_cast<std::underlying_type_t<Domain>>(DOMAIN),
@@ -87,6 +91,8 @@ namespace checkerboard
             return Address<DOMAIN>{sa};
         }
 
+        using Socket<DOMAIN, TYPE>::domain;
+        using Socket<DOMAIN, TYPE>::type;
         using Socket<DOMAIN, TYPE>::socket;
     };
 
@@ -100,6 +106,8 @@ namespace checkerboard
             // TODO: make sure s wasn't invalid
         }
 
+        using BoundSocket<DOMAIN, TYPE>::domain;
+        using BoundSocket<DOMAIN, TYPE>::type;
         using BoundSocket<DOMAIN, TYPE>::socket;
         using BoundSocket<DOMAIN, TYPE>::address;
     };
@@ -118,6 +126,25 @@ namespace checkerboard
 
         using BoundSocket<DOMAIN, TYPE>::socket;
         using BoundSocket<DOMAIN, TYPE>::address;
+    };
+
+    template <typename SOCKET>
+    struct connectionless_send;
+
+    template <typename SOCKET>
+    static constexpr auto connectionless_send_v =
+        connectionless_send<SOCKET>::value;
+
+    template <Domain DOMAIN>
+    struct connectionless_send<Socket<DOMAIN, checkerboard::datagram>>
+    {
+        static constexpr bool value = true;
+    };
+
+    template <Domain DOMAIN>
+    struct connectionless_send<BoundSocket<DOMAIN, checkerboard::datagram>>
+    {
+        static constexpr bool value = true;
     };
 } // namespace checkerboard
 
