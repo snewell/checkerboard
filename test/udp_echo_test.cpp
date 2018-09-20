@@ -13,7 +13,7 @@ namespace
     }
 } // namespace
 
-TEST(Udp, echo_inet_bind) // NOLINT
+TEST(Echo, echo_inet_bind) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -35,7 +35,7 @@ TEST(Udp, echo_inet_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TEST(Udp, echo_inet6_bind) // NOLINT
+TEST(Echo, echo_inet6_bind) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};
@@ -57,7 +57,7 @@ TEST(Udp, echo_inet6_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TEST(Udp, echo_inet_no_bind) // NOLINT
+TEST(Echo, echo_inet_no_bind) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -79,7 +79,7 @@ TEST(Udp, echo_inet_no_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TEST(Udp, echo_inet6_no_bind) // NOLINT
+TEST(Echo, echo_inet6_no_bind) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};
