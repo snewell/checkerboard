@@ -13,6 +13,16 @@ namespace checkerboard
 {
     namespace inner
     {
+        template <typename BYTE>
+        struct is_byte
+        {
+            static constexpr bool value =
+                std::is_integral<BYTE>::value && (sizeof(BYTE) == 1);
+        };
+
+        template <typename BYTE>
+        static constexpr auto is_byte_v = is_byte<BYTE>::value;
+
         inline void emit_exception(int error)
         {
             throw std::runtime_error{::strerror(error)};
@@ -112,59 +122,39 @@ namespace checkerboard
         }
     } // namespace inner
 
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t send(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::uint8_t const * data, std::size_t size)
+    template <Domain DOMAIN, Type TYPE, typename BYTE>
+    std::size_t send(ConnectedSocket<DOMAIN, TYPE> & socket, BYTE const * data,
+                     std::size_t size)
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Send buffer must be a byte sequence");
         return inner::real_send(socket, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
+    template <Domain DOMAIN, Type TYPE, typename BYTE, std::size_t SIZE>
     std::size_t send(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::uint8_t const (&data)[SIZE])
+                     BYTE const (&data)[SIZE])
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Send buffer must be a byte sequence");
         return inner::real_send(socket, data, SIZE);
     }
 
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t send(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::int8_t const * data, std::size_t size)
-    {
-        return inner::real_send(socket, data, size);
-    }
-
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
-    std::size_t send(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::int8_t const (&data)[SIZE])
-    {
-        return inner::real_send(socket, data, SIZE);
-    }
-
-    template <typename SOCKET, Domain DOMAIN>
+    template <typename SOCKET, Domain DOMAIN, typename BYTE>
     std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
-                        std::uint8_t const * data, std::size_t size)
+                        BYTE const * data, std::size_t size)
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Send buffer must be a byte sequence");
         return inner::real_send_to(socket, destination, data, size);
     }
 
-    template <typename SOCKET, Domain DOMAIN, std::size_t SIZE>
+    template <typename SOCKET, Domain DOMAIN, typename BYTE, std::size_t SIZE>
     std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
-                        std::uint8_t const (&data)[SIZE])
+                        BYTE const (&data)[SIZE])
     {
-        return inner::real_send_to(socket, destination, data, SIZE);
-    }
-
-    template <typename SOCKET, Domain DOMAIN>
-    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
-                        std::int8_t const * data, std::size_t size)
-    {
-        return inner::real_send_to(socket, destination, data, size);
-    }
-
-    template <typename SOCKET, Domain DOMAIN, std::size_t SIZE>
-    std::size_t send_to(SOCKET & socket, Address<DOMAIN> const & destination,
-                        std::int8_t const (&data)[SIZE])
-    {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Send buffer must be a byte sequence");
         return inner::real_send_to(socket, destination, data, SIZE);
     }
 
@@ -207,59 +197,39 @@ namespace checkerboard
         }
     } // namespace inner
 
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::uint8_t * data, std::size_t size)
-    {
-        return inner::real_recv(socket, data, size);
-    }
-
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
-    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::uint8_t (&data)[SIZE])
-    {
-        return inner::real_recv(socket, data, SIZE);
-    }
-
-    template <Domain DOMAIN, Type TYPE>
-    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket, std::int8_t * data,
+    template <Domain DOMAIN, Type TYPE, typename BYTE>
+    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket, BYTE * data,
                      std::size_t size)
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Receive buffer must be a byte sequence");
         return inner::real_recv(socket, data, size);
     }
 
-    template <Domain DOMAIN, Type TYPE, std::size_t SIZE>
-    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket,
-                     std::int8_t (&data)[SIZE])
+    template <Domain DOMAIN, Type TYPE, typename BYTE, std::size_t SIZE>
+    std::size_t recv(ConnectedSocket<DOMAIN, TYPE> & socket, BYTE (&data)[SIZE])
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Receive buffer must be a byte sequence");
         return inner::real_recv(socket, data, SIZE);
     }
 
-    template <typename SOCKET, Domain DOMAIN = SOCKET::domain>
+    template <typename SOCKET, typename BYTE, Domain DOMAIN = SOCKET::domain>
     std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(SOCKET & socket, std::uint8_t * data, std::size_t size)
+    recv_from(SOCKET & socket, BYTE * data, std::size_t size)
     {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Receive buffer must be a byte sequence");
         return inner::real_recv_from(socket, data, size);
     }
 
-    template <typename SOCKET, std::size_t SIZE, Domain DOMAIN = SOCKET::domain>
-    std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(SOCKET & socket, std::uint8_t (&data)[SIZE])
+    template <typename SOCKET, typename BYTE, std::size_t SIZE,
+              Domain DOMAIN = SOCKET::domain>
+    std::tuple<std::size_t, Address<DOMAIN>> recv_from(SOCKET & socket,
+                                                       BYTE (&data)[SIZE])
     {
-        return inner::real_recv_from(socket, data, SIZE);
-    }
-
-    template <typename SOCKET, Domain DOMAIN = SOCKET::domain>
-    std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(SOCKET & socket, std::int8_t * data, std::size_t size)
-    {
-        return inner::real_recv_from(socket, data, size);
-    }
-
-    template <typename SOCKET, std::size_t SIZE, Domain DOMAIN = SOCKET::domain>
-    std::tuple<std::size_t, Address<DOMAIN>>
-    recv_from(SOCKET & socket, std::int8_t (&data)[SIZE])
-    {
+        static_assert(inner::is_byte_v<BYTE>,
+                      "Receive buffer must be a byte sequence");
         return inner::real_recv_from(socket, data, SIZE);
     }
 } // namespace checkerboard
