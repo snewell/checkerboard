@@ -2,6 +2,9 @@
 #define CHECKERBOARD_FNS_HPP 1
 
 #include <cerrno>
+#if __cplusplus >= 201703L
+#include <cstddef> // needed for std::byte
+#endif
 
 #include <stdexcept>
 #include <tuple>
@@ -19,6 +22,15 @@ namespace checkerboard
             static constexpr bool value =
                 std::is_integral<BYTE>::value && (sizeof(BYTE) == 1);
         };
+
+#if __cplusplus >= 201703L
+        // std::byte isn't considered an integral type, so we need to specialize
+        template <>
+        struct is_byte<std::byte>
+        {
+            static constexpr bool value = true;
+        };
+#endif
 
         template <typename BYTE>
         static constexpr auto is_byte_v = is_byte<BYTE>::value;

@@ -18,7 +18,12 @@ namespace
     };
 } // namespace
 
-using MyTypes = ::testing::Types<std::int8_t, std::uint8_t>;
+using MyTypes = ::testing::Types<std::int8_t, std::uint8_t
+#if __cplusplus >= 201703L
+                                 ,
+                                 std::byte
+#endif
+                                 >;
 TYPED_TEST_SUITE(Echo, MyTypes, );
 
 TYPED_TEST(Echo, echo_inet_bind) // NOLINT
@@ -28,14 +33,17 @@ TYPED_TEST(Echo, echo_inet_bind) // NOLINT
     auto client = make_server(a);
     auto server = make_server(a);
 
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send_to(client, server.address(), hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     checkerboard::recv_from(server, world);
     checkerboard::send_to(server, client.address(), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_data = checkerboard::recv_from(client, buffer);
 
     ASSERT_EQ(sent_bytes, std::get<0>(received_data));
@@ -50,14 +58,17 @@ TYPED_TEST(Echo, echo_inet6_bind) // NOLINT
     auto client = make_server(a);
     auto server = make_server(a);
 
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send_to(client, server.address(), hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     checkerboard::recv_from(server, world);
     checkerboard::send_to(server, client.address(), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_data = checkerboard::recv_from(client, buffer);
 
     ASSERT_EQ(sent_bytes, std::get<0>(received_data));
@@ -72,14 +83,17 @@ TYPED_TEST(Echo, echo_inet_no_bind) // NOLINT
     auto server = make_server(a);
 
     checkerboard::Socket<checkerboard::inet, checkerboard::datagram> client;
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send_to(client, server.address(), hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     auto received_data = checkerboard::recv_from(server, world);
     checkerboard::send_to(server, std::get<1>(received_data), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_data2 = checkerboard::recv_from(client, buffer);
 
     ASSERT_EQ(sent_bytes, std::get<0>(received_data2));
@@ -94,14 +108,17 @@ TYPED_TEST(Echo, echo_inet6_no_bind) // NOLINT
     auto server = make_server(a);
 
     checkerboard::Socket<checkerboard::inet6, checkerboard::datagram> client;
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send_to(client, server.address(), hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     auto received_data = checkerboard::recv_from(server, world);
     checkerboard::send_to(server, std::get<1>(received_data), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_data2 = checkerboard::recv_from(client, buffer);
 
     ASSERT_EQ(sent_bytes, std::get<0>(received_data2));

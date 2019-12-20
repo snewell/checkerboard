@@ -27,7 +27,12 @@ namespace
     };
 } // namespace
 
-using MyTypes = ::testing::Types<std::int8_t, std::uint8_t>;
+using MyTypes = ::testing::Types<std::int8_t, std::uint8_t
+#if __cplusplus >= 201703L
+                                 ,
+                                 std::byte
+#endif
+                                 >;
 TYPED_TEST_SUITE(Echo, MyTypes, );
 
 TYPED_TEST(Echo, echo_inet) // NOLINT
@@ -38,14 +43,17 @@ TYPED_TEST(Echo, echo_inet) // NOLINT
     auto outbound_connection = connect_server(listening_socket.address());
     auto inbound_connection = checkerboard::accept(listening_socket);
 
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send(outbound_connection, hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     checkerboard::recv(std::get<0>(inbound_connection), world);
     checkerboard::send(std::get<0>(inbound_connection), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_bytes = checkerboard::recv(outbound_connection, buffer);
 
     ASSERT_EQ(sent_bytes, received_bytes);
@@ -61,14 +69,17 @@ TYPED_TEST(Echo, echo_inet6) // NOLINT
     auto outbound_connection = connect_server(listening_socket.address());
     auto inbound_connection = checkerboard::accept(listening_socket);
 
-    TypeParam const hello[] = "Hello";
+    TypeParam const hello[] = {
+        static_cast<TypeParam>('H'), static_cast<TypeParam>('e'),
+        static_cast<TypeParam>('l'), static_cast<TypeParam>('l'),
+        static_cast<TypeParam>('o')};
     auto sent_bytes = checkerboard::send(outbound_connection, hello);
 
-    TypeParam world[6];
+    TypeParam world[5];
     checkerboard::recv(std::get<0>(inbound_connection), world);
     checkerboard::send(std::get<0>(inbound_connection), world);
 
-    TypeParam buffer[6];
+    TypeParam buffer[5];
     auto received_bytes = checkerboard::recv(outbound_connection, buffer);
 
     ASSERT_EQ(sent_bytes, received_bytes);
