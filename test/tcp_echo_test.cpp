@@ -22,7 +22,7 @@ namespace
     }
 
     template <typename T>
-    class Echo : public ::testing::Test
+    class TcpEcho : public ::testing::Test
     {
     };
 } // namespace
@@ -33,9 +33,9 @@ using MyTypes = ::testing::Types<std::int8_t, std::uint8_t
                                  std::byte
 #endif
                                  >;
-TYPED_TEST_SUITE(Echo, MyTypes, );
+TYPED_TEST_SUITE(TcpEcho, MyTypes, );
 
-TYPED_TEST(Echo, echo_inet) // NOLINT
+TYPED_TEST(TcpEcho, echo_inet) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -61,7 +61,7 @@ TYPED_TEST(Echo, echo_inet) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TYPED_TEST(Echo, echo_inet6) // NOLINT
+TYPED_TEST(TcpEcho, echo_inet6) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};

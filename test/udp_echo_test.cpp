@@ -13,7 +13,7 @@ namespace
     }
 
     template <typename T>
-    class Echo : public ::testing::Test
+    class UdpEcho : public ::testing::Test
     {
     };
 } // namespace
@@ -24,9 +24,9 @@ using MyTypes = ::testing::Types<std::int8_t, std::uint8_t
                                  std::byte
 #endif
                                  >;
-TYPED_TEST_SUITE(Echo, MyTypes, );
+TYPED_TEST_SUITE(UdpEcho, MyTypes, );
 
-TYPED_TEST(Echo, echo_inet_bind) // NOLINT
+TYPED_TEST(UdpEcho, echo_inet_bind) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -51,7 +51,7 @@ TYPED_TEST(Echo, echo_inet_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TYPED_TEST(Echo, echo_inet6_bind) // NOLINT
+TYPED_TEST(UdpEcho, echo_inet6_bind) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};
@@ -76,7 +76,7 @@ TYPED_TEST(Echo, echo_inet6_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TYPED_TEST(Echo, echo_inet_no_bind) // NOLINT
+TYPED_TEST(UdpEcho, echo_inet_no_bind) // NOLINT
 {
     std::uint8_t ip[4] = {127, 0, 0, 1};
     checkerboard::Address<checkerboard::inet> a{ip, 0};
@@ -101,7 +101,7 @@ TYPED_TEST(Echo, echo_inet_no_bind) // NOLINT
         std::equal(std::begin(hello), std::end(hello), std::begin(buffer)));
 }
 
-TYPED_TEST(Echo, echo_inet6_no_bind) // NOLINT
+TYPED_TEST(UdpEcho, echo_inet6_no_bind) // NOLINT
 {
     std::uint8_t ip[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     checkerboard::Address<checkerboard::inet6> a{ip, 0};
