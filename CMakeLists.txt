@@ -21,12 +21,12 @@ option(CHECKERBOARD_BUILD_TESTS "Build optional tests (requires GTest)" ON)
 enable_testing()
 
 if(CHECKERBOARD_BUILD_TESTS)
-    find_package(GTest REQUIRED)
+    find_package(GTest CONFIG REQUIRED)
     function(create_test name)
         add_executable(${name} ${ARGN})
         target_link_libraries(${name}
-            GTest::GTest
-            GTest::Main
+            GTest::gtest
+            GTest::gtest_main
             checkerboard
         )
         set_target_properties(${name} PROPERTIES
