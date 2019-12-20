@@ -21,18 +21,45 @@ option(CHECKERBOARD_BUILD_TESTS "Build optional tests (requires GTest)" ON)
 enable_testing()
 
 if(CHECKERBOARD_BUILD_TESTS)
+    if(NOT CHECKERBOARD_MAXIMUM_TEST_STANDARD)
+        set(CHECKERBOARD_MAXIMUM_TEST_STANDARD 17
+            CACHE STRING "The maximum C++ standard to use for tests (default: 17)"
+        )
+    endif()
+
+    foreach(supported_version IN ITEMS 14 17)
+        if(${supported_version} LESS_EQUAL ${CHECKERBOARD_MAXIMUM_TEST_STANDARD})
+            message(STATUS "Enabling C++${supported_version} tests")
+            list(APPEND test_standards ${supported_version})
+        endif()
+    endforeach()
+
+    if(NOT test_standards)
+        message(WARNING "No supported standards for tests")
+    endif()
+
     find_package(GTest CONFIG REQUIRED)
-    function(create_test name)
-        add_executable(${name} ${ARGN})
-        target_link_libraries(${name}
+    function(create_test_std name std_version)
+        set(real_name "${name}_${std_version}")
+        add_executable(${real_name} ${ARGN})
+        target_link_libraries(${real_name}
             GTest::gtest
             GTest::gtest_main
             checkerboard
         )
-        set_target_properties(${name} PROPERTIES
+        set_target_properties(${real_name} PROPERTIES
             CXX_EXTENSIONS OFF
         )
-        add_test(${name} ${name} "--gtest_output=xml:${CMAKE_CURRENT_BINARY_DIR}/${name}_results.xml")
+        target_compile_features(${real_name} PRIVATE
+            cxx_std_${std_version}
+        )
+        add_test(${real_name} ${real_name} "--gtest_output=xml:${CMAKE_CURRENT_BINARY_DIR}/${real_name}_results.xml")
+    endfunction()
+
+    function(create_test name)
+        foreach(std_version IN LISTS test_standards)
+            create_test_std(${name} ${std_version} ${ARGN})
+        endforeach()
     endfunction()
 else()
     function(create_test name)
