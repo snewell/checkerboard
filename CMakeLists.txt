@@ -102,11 +102,11 @@ add_subdirectory(test)
 
 add_headers(
     address.hpp
-    domain.hpp
     fns.hpp
-    sockaddr.hpp
+    inet.hpp
     socket.hpp
     type.hpp
+    unix.hpp
 )
 
 install(TARGETS

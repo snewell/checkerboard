@@ -1,1 +1,0 @@
-#include <checkerboard/domain.hpp>

@@ -1,29 +1,20 @@
-create_test(address_test
-    address_test.cpp
+create_test(inet_test
+    inet_address_test.cpp
+    inet_bind_test.cpp
+    inet_listen_test.cpp
+    tcp_connect_test.cpp
+    tcp_echo_test.cpp
+    udp_connect_test.cpp
+    udp_echo_test.cpp
 )
 
 create_test(compile_test
     address_compile_test.cpp
-    domain_compile_test.cpp
     fns_compile_test.cpp
-    sockaddr_compile_test.cpp
+    inet_compile_test.cpp
     socket_compile_test.cpp
     type_compile_test.cpp
-)
-
-create_test(socket_test
-    bind_test.cpp
-    listen_test.cpp
-)
-
-create_test(tcp_test
-    tcp_connect_test.cpp
-    tcp_echo_test.cpp
-)
-
-create_test(udp_test
-    udp_connect_test.cpp
-    udp_echo_test.cpp
+    unix_compile_test.cpp
 )
 
 create_test(unix_test

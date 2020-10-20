@@ -1,4 +1,4 @@
-#include <checkerboard/address.hpp>
+#include <checkerboard/inet.hpp>
 
 #include <gtest/gtest.h>
 

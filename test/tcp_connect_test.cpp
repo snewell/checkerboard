@@ -1,5 +1,7 @@
 #include <checkerboard/fns.hpp>
 
+#include <checkerboard/inet.hpp>
+
 #include <gtest/gtest.h>
 
 namespace

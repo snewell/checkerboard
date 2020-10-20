@@ -6,9 +6,9 @@
 #include <unistd.h>
 
 #include <type_traits>
+#include <utility>
 
 #include <checkerboard/address.hpp>
-#include <checkerboard/domain.hpp>
 #include <checkerboard/type.hpp>
 
 namespace checkerboard
