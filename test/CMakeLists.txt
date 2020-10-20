@@ -25,3 +25,7 @@ create_test(udp_test
     udp_connect_test.cpp
     udp_echo_test.cpp
 )
+
+create_test(unix_test
+    unix_echo_stream_test.cpp
+)

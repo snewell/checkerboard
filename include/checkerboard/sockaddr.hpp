@@ -2,6 +2,7 @@
 #define CHECKERBOARD_SOCKADDR_HPP 1
 
 #include <netinet/in.h>
+#include <sys/un.h>
 
 #include <cstdint>
 #include <cstring>
@@ -156,6 +157,33 @@ namespace checkerboard
                     std::uint8_t (&ip)[ip_size_v<checkerboard::inet6>])
             {
                 ::memcpy(ip, &(s.sin6_addr), ip_size_v<checkerboard::inet6>);
+            }
+        };
+
+    } // namespace inner
+
+    template <>
+    struct sockaddr_type<checkerboard::unix_socket>
+    {
+        using type = ::sockaddr_un;
+    };
+
+    namespace inner
+    {
+        template <>
+        struct sockaddr_builder<::checkerboard::unix_socket>
+        {
+            using sockaddr_t = sockaddr_type_t<::checkerboard::unix_socket>;
+
+            template <std::size_t PATH_LENGTH>
+            static sockaddr_t make_sockaddr(char const (&path)[PATH_LENGTH])
+            {
+                static_assert(PATH_LENGTH <= sizeof(::sockaddr_un::sun_path),
+                              "Path too long");
+                sockaddr_t sockaddr;
+                sockaddr.sun_family = AF_UNIX;
+                std::strncpy(sockaddr.sun_path, path, PATH_LENGTH);
+                return sockaddr;
             }
         };
     } // namespace inner

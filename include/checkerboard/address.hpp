@@ -57,31 +57,74 @@ namespace checkerboard
         {
             static constexpr bool value = true;
         };
+
+        template <Domain DOMAIN>
+        class InetAddress : public BaseAddress<DOMAIN>
+        {
+        public:
+            static_assert(is_inet_domain_v<DOMAIN>,
+                          "Cannot use non-inet domain with InetAddress");
+
+            static constexpr std::size_t ip_byte_count = ip_size<DOMAIN>::value;
+            using BaseAddress<DOMAIN>::BaseAddress;
+            InetAddress(std::uint8_t const (&ip)[ip_byte_count],
+                        std::uint16_t port)
+              : InetAddress{
+                    inner::sockaddr_builder<DOMAIN>::make_sockaddr(ip, port)}
+            {
+            }
+
+            void ip(std::uint8_t (&ip)[ip_size_v<DOMAIN>])
+            {
+                inner::sockaddr_ip_getter<DOMAIN>::fill_ip(
+                    BaseAddress<DOMAIN>::_sockaddr, ip);
+            }
+
+            std::uint16_t port() const noexcept
+            {
+                return inner::sockaddr_port_getter<DOMAIN>::get_sockaddr_port(
+                    BaseAddress<DOMAIN>::_sockaddr);
+            }
+        };
+
+        class UnixAddress : public BaseAddress<::checkerboard::unix_socket>
+        {
+        public:
+            using BaseAddress<::checkerboard::unix_socket>::BaseAddress;
+
+            template <std::size_t PATH_LENGTH>
+            UnixAddress(char const (&path)[PATH_LENGTH])
+              : BaseAddress{sockaddr_builder<
+                    ::checkerboard::unix_socket>::make_sockaddr(path)}
+            {
+            }
+        };
     } // namespace inner
 
-    template <Domain DOMAIN,
-              std::enable_if_t<inner::is_inet_domain_v<DOMAIN>, int> = 0>
-    class Address : public inner::BaseAddress<DOMAIN>
+    template <Domain DOMAIN>
+    class Address;
+
+    template <>
+    class Address<::checkerboard::inet>
+      : public inner::InetAddress<::checkerboard::inet>
     {
     public:
-        static constexpr std::size_t ip_byte_count = ip_size<DOMAIN>::value;
-        using inner::BaseAddress<DOMAIN>::BaseAddress;
-        Address(std::uint8_t const (&ip)[ip_byte_count], std::uint16_t port)
-          : Address{inner::sockaddr_builder<DOMAIN>::make_sockaddr(ip, port)}
-        {
-        }
+        using inner::InetAddress<::checkerboard::inet>::InetAddress;
+    };
 
-        void ip(std::uint8_t (&ip)[ip_size_v<DOMAIN>])
-        {
-            inner::sockaddr_ip_getter<DOMAIN>::fill_ip(
-                inner::BaseAddress<DOMAIN>::_sockaddr, ip);
-        }
+    template <>
+    class Address<::checkerboard::inet6>
+      : public inner::InetAddress<::checkerboard::inet6>
+    {
+    public:
+        using inner::InetAddress<::checkerboard::inet6>::InetAddress;
+    };
 
-        std::uint16_t port() const noexcept
-        {
-            return inner::sockaddr_port_getter<DOMAIN>::get_sockaddr_port(
-                inner::BaseAddress<DOMAIN>::_sockaddr);
-        }
+    template <>
+    class Address<::checkerboard::unix_socket> : public inner::UnixAddress
+    {
+    public:
+        using inner::UnixAddress::UnixAddress;
     };
 } // namespace checkerboard
 

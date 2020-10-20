@@ -14,6 +14,7 @@ namespace checkerboard
 
     constexpr Domain inet = Domain(AF_INET);
     constexpr Domain inet6 = Domain(AF_INET6);
+    constexpr Domain unix_socket = Domain(AF_UNIX);
 } // namespace checkerboard
 
 #endif
