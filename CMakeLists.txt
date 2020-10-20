@@ -27,7 +27,7 @@ if(CHECKERBOARD_BUILD_TESTS)
         )
     endif()
 
-    foreach(supported_version IN ITEMS 14 17)
+    foreach(supported_version IN ITEMS 14 17 20)
         if(${supported_version} LESS_EQUAL ${CHECKERBOARD_MAXIMUM_TEST_STANDARD})
             message(STATUS "Enabling C++${supported_version} tests")
             list(APPEND test_standards ${supported_version})
